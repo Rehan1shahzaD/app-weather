@@ -1,7 +1,55 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport"
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Weather App</title>
+        <link rel="stylesheet" href="{% static 'weatherapp/style.css' %}">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
     </head>
+    <body
+        {% if exception_occurred %}
+            style="background-image: url('https://images.pexels.com/photos/3008509/pexels-photo-3008509.jpeg?auto=compress&cs=tinysrgb&w=1600');"
+        {% else %}
+            style="background-image: url('{{ image_url }}');"
+        {% endif %}>
+        <div class="container">
+            <h1 class="heading">Weather App</h1>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="city" value="{{ city|default:'lahore' }}" placeholder="Enter City">
+                <button type="submit" class="btn">Search</button>
+            </form>
+
+            {% if not exception_occurred %}
+                <div class="weather">
+                    <div class="left">
+                        <h2 class="temp">{{ temp }}&#176; C</h2>
+                        <h2 class="city">{{ city }}</h2>
+                    </div>
+                    <div class="right">
+                        <div class="icon">
+                            {% if icon %}
+                                <img src="https://openweathermap.org/img/wn/{{ icon }}@2x.png" alt="{{ description }}" width="120">
+                            {% endif %}
+                        </div>
+                        <div class="condition">
+                            <p>{{ description|title }}</p>
+                            <p>{{ day }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if exception_occurred %}
+            <script>
+                window.onload = function () {
+                    alert('City information is not available in the Weather API');
+                };
+            </script>
+        {% endif %}
+    </body>
 </html>
